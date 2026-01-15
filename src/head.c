@@ -11,7 +11,7 @@ void command_head(const char *filename, int number_of_lines)
     if (!fp)
     {
         fprintf(stderr, "Couldn't open file %s\n", filename);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     char line[MAX_CHARS_IN_LINE];

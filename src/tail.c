@@ -34,7 +34,7 @@ void command_tail(const char *filename, int number_of_lines)
     if (!fp)
     {
         fprintf(stderr, "Couldn't open file: %s\n", filename);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     // Lines exceeding characters than MAX_CHARS_IN_LINE are automatically truncated
@@ -44,7 +44,7 @@ void command_tail(const char *filename, int number_of_lines)
     if (total_lines < 0)
     {
         fclose(fp);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     int lines_to_skip = total_lines - number_of_lines;
