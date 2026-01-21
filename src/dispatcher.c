@@ -8,6 +8,7 @@
 #include "pwd.h"
 #include "wc.h"
 #include "cp.h"
+#include "whoami.h"
 #include "help.h"
 
 // Dispatch commands based on argv
@@ -118,9 +119,19 @@ void command_dispatcher(int argc, const char *argv[])
         }
         command_cp(argv[2], argv[3]);
     }
+    else if (strcmp(argv[1], "whoami") == 0)
+    {
+        if (argc > 2)
+        {
+            command_help();
+            exit(EXIT_FAILURE);
+        }
+        command_whoami();
+    }
     else
     {
         fprintf(stderr, "Unknown command: %s\n", argv[1]);
         command_help();
+        exit(EXIT_FAILURE);
     }
 }
