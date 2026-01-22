@@ -15,5 +15,6 @@ void command_help()
     fprintf(stdout, "  tail -n <file>            Print last n lines\n");
     fprintf(stdout, "  pwd                       Print current working directory\n");
     fprintf(stdout, "  cp <source> <destination> Copies file at source to destination\n");
+    fprintf(stdout, "  whoami                    Prints the current user name\n");
     fprintf(stdout, "  -h, --help                Show this help message\n");
 }

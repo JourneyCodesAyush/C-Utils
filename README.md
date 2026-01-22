@@ -41,6 +41,11 @@ Prints the last N lines of a file.
 Prints the current working directory.
 **Options:** None
 
+### whoami
+
+Prints the current user name.
+**Options:** None
+
 ### wc
 
 Counts lines, words, and characters in a file.
@@ -86,6 +91,7 @@ make
 ./cutils tail -5 file.txt
 ./cutils wc -lw file.txt
 ./cutils pwd
+./cutils whoami
 ./cutils -h
 ./cutils --help
 ```
@@ -94,7 +100,7 @@ make
 
 ## Project Structure
 
-```
+```bash
 c-utils/
 ├── src/
 │   ├── main.c
@@ -103,15 +109,10 @@ c-utils/
 │   ├── tail.c
 │   ├── pwd.c
 │   ├── wc.c
+│   ├── whoami.c
 │   └── help.c
-├── include/
-│   ├── common.h
-│   ├── dispatcher.h
-│   ├── head.h
-│   ├── tail.h
-│   ├── pwd.h
-│   ├── wc.h
-│   └── help.h
+├── include/  # Header files that are included in src/
+│
 ├── Makefile
 └── README.md
 ```
