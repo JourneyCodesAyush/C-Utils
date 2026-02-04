@@ -17,4 +17,5 @@ void command_help()
     fprintf(stdout, "  cp <source> <destination> Copies file at source to destination\n");
     fprintf(stdout, "  whoami                    Prints the current user name\n");
     fprintf(stdout, "  -h, --help                Show this help message\n");
+    fprintf(stdout, "  -v, --version             Print the version of c-utils\n");
 }
