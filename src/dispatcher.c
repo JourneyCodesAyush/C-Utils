@@ -10,6 +10,7 @@
 #include "cp.h"
 #include "whoami.h"
 #include "help.h"
+#include "version.h"
 
 // Dispatch commands based on argv
 void command_dispatcher(int argc, const char *argv[])
@@ -23,6 +24,18 @@ void command_dispatcher(int argc, const char *argv[])
     if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
     {
         command_help();
+        exit(EXIT_SUCCESS);
+    }
+
+    if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
+    {
+        if (argc > 2)
+        {
+            command_help();
+            exit(EXIT_FAILURE);
+        }
+
+        fprintf(stdout, "%s\n", __version__);
         exit(EXIT_SUCCESS);
     }
 
