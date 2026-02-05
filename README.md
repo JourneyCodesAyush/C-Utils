@@ -62,6 +62,11 @@ Counts lines, words, and characters in a file.
 Prints usage information.
 **Options:** None
 
+### -v / --version
+
+Prints version information.
+**Options:** None
+
 ---
 
 ## Notes / Limitations
