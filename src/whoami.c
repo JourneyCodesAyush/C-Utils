@@ -12,6 +12,7 @@
 #define USER "USER"
 #include <unistd.h>
 #include <pwd.h>
+#include <sys/types.h>
 #endif
 
 // Compile functions suited for OS
