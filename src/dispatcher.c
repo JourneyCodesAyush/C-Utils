@@ -12,139 +12,180 @@
 #include "help.h"
 #include "version.h"
 
-// Dispatch commands based on argv
+int head_cmd(int argc, const char **argv)
+{
+    if (argc == 2)
+    {
+        command_head(argv[1], 10);
+    }
+    else if (argc == 3 && argv[1][0] == '-') // head -n file or head -5 file
+    {
+        char *endptr;
+        long number = strtol(argv[1], &endptr, 10);
+        if (*endptr != '\0')
+        {
+            fprintf(stderr, "Invalid line count: %s\n", argv[1]);
+            return EXIT_FAILURE;
+        }
+        if (number < 0)
+            number *= -1;
+        command_head(argv[2], number);
+    }
+    else
+    {
+        command_help();
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+int tail_cmd(int argc, const char **argv)
+{
+    if (argc == 2)
+    {
+        command_tail(argv[1], 10);
+    }
+    else if (argc == 3 && argv[1][0] == '-') // tail -n file or tail -5 file
+    {
+        char *endptr;
+        long number = strtol(argv[1], &endptr, 10);
+        if (*endptr != '\0')
+        {
+            fprintf(stderr, "Invalid line count: %s\n", argv[1]);
+            return EXIT_FAILURE;
+        }
+        if (number < 0)
+            number *= -1;
+        command_tail(argv[2], number);
+    }
+    else
+    {
+        command_help();
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+int pwd_cmd(int argc, const char **argv)
+{
+    command_pwd();
+    return EXIT_SUCCESS;
+}
+
+int wc_cmd(int argc, const char **argv)
+{
+    WCOptions opts = {true, true, true};
+    int file_index = 1;
+
+    if (argc >= 2 && argv[1][0] == '-')
+    {
+        opts.print_chars = false;
+        opts.print_lines = false;
+        opts.print_words = false;
+        for (const char *p = argv[1] + 1; *p; p++)
+        {
+            if (*p == 'l')
+                opts.print_lines = true;
+            else if (*p == 'c')
+                opts.print_chars = true;
+            else if (*p == 'w')
+                opts.print_words = true;
+            else
+            {
+                fprintf(stderr, "Unknown option: -%c\n", *p);
+                return EXIT_FAILURE;
+            }
+        }
+        file_index = 2;
+    }
+
+    if (argc <= file_index)
+    {
+        fprintf(stderr, "Missing filename for wc\n");
+        return EXIT_FAILURE;
+    }
+
+    command_wc(argv[file_index], &opts);
+    return EXIT_SUCCESS;
+}
+
+int cp_cmd(int argc, const char **argv)
+{
+    if (argc < 3)
+    {
+        command_help();
+        return EXIT_FAILURE;
+    }
+    command_cp(argv[1], argv[2]);
+    return EXIT_SUCCESS;
+}
+
+int whoami_cmd(int argc, const char **argv)
+{
+    if (argc > 1)
+    {
+        command_help();
+        return EXIT_FAILURE;
+    }
+    command_whoami();
+    return EXIT_SUCCESS;
+}
+
+int help_cmd(int argc, const char **argv)
+{
+    command_help();
+    return EXIT_SUCCESS;
+}
+
+Command commands[] = {
+    {"head", head_cmd, "Print first n lines of a file"},
+    {"tail", tail_cmd, "Print last n lines of a file"},
+    {"pwd", pwd_cmd, "Print current working directory"},
+    {"wc", wc_cmd, "Count lines, words, characters"},
+    {"cp", cp_cmd, "Copy file from source to destination"},
+    {"whoami", whoami_cmd, "Print current user name"},
+    {"help", help_cmd, "Show help message"},
+    {NULL, NULL, NULL} // sentinel
+};
+
 void command_dispatcher(int argc, const char *argv[])
 {
-    // Basic argument check and print help message if no argument provided
     if (argc < 2)
     {
         command_help();
         exit(EXIT_FAILURE);
     }
-    if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
+
+    const char *cmd_name = argv[1];
+
+    if (strcmp(cmd_name, "-h") == 0 || strcmp(cmd_name, "--help") == 0)
     {
         command_help();
         exit(EXIT_SUCCESS);
     }
 
-    if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
+    if (strcmp(cmd_name, "-v") == 0 || strcmp(cmd_name, "--version") == 0)
     {
         if (argc > 2)
         {
             command_help();
             exit(EXIT_FAILURE);
         }
-
         fprintf(stdout, "%s\n", __version__);
         exit(EXIT_SUCCESS);
     }
 
-    if (strcmp(argv[1], "head") == 0)
+    for (Command *c = commands; c->name; c++)
     {
-        if (argc == 3)
+        if (strcmp(cmd_name, c->name) == 0)
         {
-            command_head(argv[2], 10);
-        }
-        else if (argc == 4)
-        {
-            char *endptr;
-            long number = strtol(argv[2], &endptr, 10);
-            if (*endptr != '\0')
-            {
-                fprintf(stderr, "Invalid line count: %s\n", argv[2]);
-                exit(EXIT_FAILURE);
-            }
-            number *= -1;
-            command_head(argv[3], number);
-        }
-    }
-    else if (strcmp(argv[1], "tail") == 0)
-    {
-        if (argc == 3)
-        {
-            command_tail(argv[2], 10);
-        }
-        else if (argc == 4)
-        {
-            char *endptr;
-            long number = strtol(argv[2], &endptr, 10);
-            if (*endptr != '\0')
-            {
-                fprintf(stderr, "Invalid line count: %s\n", argv[2]);
-                exit(EXIT_FAILURE);
-            }
-            number *= -1;
-            command_tail(argv[3], number);
-        }
-    }
-    else if (strcmp(argv[1], "pwd") == 0)
-    {
-        command_pwd();
-    }
-    else if (strcmp(argv[1], "wc") == 0)
-    {
-        WCOptions opts = {true, true, true};
 
-        int file_index = 2;
-        /*
-                if (argc == 3)
-                {
-                    command_wc(argv[2], opts);
-                }
-                else if (argc == 4)
-                {
-                    command_wc(argv[3], opts);
-                }
-        */
-        if (argc >= 3 && argv[2][0] == '-')
-        {
-            opts.print_chars = false;
-            opts.print_lines = false;
-            opts.print_words = false;
-            for (const char *p = argv[2] + 1; *p; p++)
-            {
-                if (*p == 'l')
-                    opts.print_lines = true;
-                else if (*p == 'c')
-                    opts.print_chars = true;
-                else if (*p == 'w')
-                    opts.print_words = true;
-                else
-                {
-                    fprintf(stderr, "Unknown option: -%c\n", *p);
-                    exit(EXIT_FAILURE);
-                }
-            }
-            file_index = 3;
+            int result = c->func(argc - 1, argv + 1);
+            exit(result);
         }
-        if (argc <= file_index)
-        {
-            fprintf(stderr, "Missing filename for wc\n");
-        }
-        command_wc(argv[file_index], &opts);
     }
-    else if (strcmp(argv[1], "cp") == 0)
-    {
-        if (argc < 4)
-        {
-            command_help();
-            exit(EXIT_FAILURE);
-        }
-        command_cp(argv[2], argv[3]);
-    }
-    else if (strcmp(argv[1], "whoami") == 0)
-    {
-        if (argc > 2)
-        {
-            command_help();
-            exit(EXIT_FAILURE);
-        }
-        command_whoami();
-    }
-    else
-    {
-        fprintf(stderr, "Unknown command: %s\n", argv[1]);
-        command_help();
-        exit(EXIT_FAILURE);
-    }
+
+    fprintf(stderr, "Unknown command: %s\n", cmd_name);
+    command_help();
+    exit(EXIT_FAILURE);
 }
