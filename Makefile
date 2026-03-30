@@ -2,6 +2,10 @@
 CC = gcc
 CFLAGS = -Wall -g
 
+ifeq ($(RELEASE),1)
+	CFLAGS += -O3
+endif
+
 # Source and header directories
 SRC_DIR = src
 INC_DIR = include
