@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include "utils.h"
 
 #include "cp.h"
 
@@ -11,7 +14,26 @@ static void close_files(FILE *f1, FILE *f2)
         fclose(f2);
 }
 
-void command_cp(const char *source, const char *destination)
+static bool confirm_overwrite_path(const char *path)
+{
+    char msg[512];
+    snprintf(msg, sizeof(msg), "cutils: overwrite '%s'? [y/n]:", path);
+
+    return confirm_overwrite(msg);
+}
+
+static bool file_exists(const char *path)
+{
+    FILE *f = fopen(path, "rb");
+    if (f)
+    {
+        fclose(f);
+        return true;
+    }
+    return false;
+}
+
+static void copy(const char *source, const char *destination)
 {
     FILE *f1 = fopen(source, "rb");
 
@@ -68,4 +90,22 @@ void command_cp(const char *source, const char *destination)
 
     fclose(f1);
     fclose(f2);
+}
+
+void command_cp(const char *source, const char *destination, const bool interactive)
+{
+    if (strcmp(source, destination) == 0)
+    {
+        fprintf(stderr, "cutils: '%s' and '%s' are the same file\n", source, destination);
+        exit(EXIT_FAILURE);
+    }
+
+    if (interactive && file_exists(destination))
+    {
+        if (!confirm_overwrite_path(destination))
+        {
+            return;
+        }
+    }
+    copy(source, destination);
 }
