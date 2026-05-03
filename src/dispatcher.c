@@ -111,12 +111,70 @@ int wc_cmd(int argc, const char **argv)
 
 int cp_cmd(int argc, const char **argv)
 {
-    if (argc < 3)
+    bool interactive = false;
+    const char *source = NULL;
+    const char *destination = NULL;
+
+    for (int i = 1; i < argc; i++)
+    {
+        const char *arg = argv[i];
+
+        // long flags: --interactive
+        if (arg[0] == '-' && arg[1] == '-')
+        {
+            if (strcmp(arg, "--interactive") == 0)
+            {
+                interactive = true;
+            }
+            else
+            {
+                fprintf(stderr, "Unknown option: %s\n", arg);
+                return EXIT_FAILURE;
+            }
+        }
+        // short flags: -i
+        else if (arg[0] == '-' && arg[1] != '\0')
+        {
+            for (const char *p = arg + 1; *p; p++)
+            {
+                if (*p == 'i')
+                {
+                    interactive = true;
+                }
+                else
+                {
+                    fprintf(stderr, "Unknown option: -%c\n", *p);
+                    return EXIT_FAILURE;
+                }
+            }
+        }
+        // positional args
+        else
+        {
+            if (!source)
+            {
+                source = arg;
+            }
+            else if (!destination)
+            {
+                destination = arg;
+            }
+            else
+            {
+                fprintf(stderr, "cutils: too many arguments for cp\n");
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
+    // validation
+    if (!source || !destination)
     {
         command_help();
         return EXIT_FAILURE;
     }
-    command_cp(argv[1], argv[2]);
+
+    command_cp(source, destination, interactive);
     return EXIT_SUCCESS;
 }
 
