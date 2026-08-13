@@ -45,3 +45,13 @@ else
 	rm -f $(BUILD_DIR)/*.o
 	rm -f $(TARGET)
 endif
+
+.PHONY: test clean
+
+ifeq ($(OS),Windows_NT)
+test:
+	$(error Tests require Bash and are currently supported on Unix-like systems only)
+else
+test: $(TARGET)
+	./tests/test.sh
+endif
