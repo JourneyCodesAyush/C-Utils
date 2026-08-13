@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "common.h"
-#include "pwd.h"
+#include "command_pwd.h"
 
 void command_pwd()
 {

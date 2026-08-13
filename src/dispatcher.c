@@ -5,7 +5,7 @@
 #include "dispatcher.h"
 #include "head.h"
 #include "tail.h"
-#include "pwd.h"
+#include "command_pwd.h"
 #include "wc.h"
 #include "cp.h"
 #include "whoami.h"
